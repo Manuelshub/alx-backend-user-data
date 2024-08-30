@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ Module contains a function that returns a log message obfuscated
 """
+import logging
 import re
 from typing import List
 
@@ -23,3 +24,29 @@ def filter_datum(fields: List[str], redaction: str, message: str,
         message = re.sub(r"{}=(.*?)\{}".format(f, seperator),
                          r"{}={}{}".format(f, redaction, seperator), message)
     return message
+
+
+class RedactingFormatter(logging.Formatter):
+    """ Redacting Formatter clas
+    """
+
+    REDACTION = "***"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    SEPERATOR = ";"
+
+    def __init__(self, fields):
+        super(RedactingFormatter, self).__init__(self.FORMAT)
+        self.fields = fields
+
+    def format(self, record: logging.LogRecord) -> str:
+        """
+        Formats a log record using the RedactingFormatter format string
+
+        Arguments:
+            record (logging.LogRecord): the log record to format
+
+        Returns:
+            str: the formatted log record
+        """
+        return filter_datum(self.fields, self.REDACTION,
+                            super().format(record), self.SEPERATOR)
