@@ -19,8 +19,7 @@ def filter_datum(fields: List[str], redaction: str, message: str,
     Returns:
         str: the obfuscated log entry
     """
-    for field in fields:
-        message = re.sub(r"({})=([^{}]*)".format(re.escape(field),
-                         re.escape(seperator)),
-                         r"{}={}".format(field, redaction), message)
+    for f in fields:
+        message = re.sub(r"{}=(.*?)\{}".format(f, seperator),
+                         r"{}={}{}".format(f, redaction, seperator), message)
     return message
