@@ -4,6 +4,8 @@
 from .auth import Auth
 import base64
 import binascii
+from typing import TypeVar
+from models.user import User
 
 
 class BasicAuth(Auth):
@@ -74,3 +76,27 @@ class BasicAuth(Auth):
             return None, None
         vals = decoded_base64_authorization_header.split(':')
         return vals[0], vals[1]
+
+    def user_object_from_credentials(self, user_email: str,
+                                     user_pwd: str) -> TypeVar('User'):
+        """
+        Retrieves the User instance based on his email and password.
+
+        Args:
+            user_email (str): The email of the user to retrieve.
+            user_pwd (str): The password of the user to retrieve.
+
+        Returns:
+            User: The User instance requested.
+        """
+        if user_email is None or type(user_email) is not str:
+            return None
+        if user_pwd is None or type(user_pwd) is not str:
+            return None
+        users = User.search({'email': user_email})
+        if users is None:
+            return None
+        for user in users:
+            if user.is_valid_password(user_pwd):
+                return user
+        return None
