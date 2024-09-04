@@ -20,16 +20,19 @@ class Auth:
         Returns:
             bool: True if path requires auth, False otherwise
         """
-        if path is None:
+        if path is None or not excluded_paths:
             return True
-        if excluded_paths is None or excluded_paths == []:
-            return True
+
+        if path[-1] == '/' and path != '/':
+            path = path[:-1]
+
         for a_path in excluded_paths:
-            if a_path[-1] == '/' and path == a_path[:-1]:
+            if a_path[-1] == '/' and a_path != '/':
+                a_path = a_path[:-1]
+            if path == a_path:
                 return False
-            if path != a_path:
-                return True
-        return False
+
+        return True
 
     def authorization_header(self, request=None) -> str:
         """
@@ -37,7 +40,12 @@ class Auth:
         If request is not provided, it uses the current request context.
         Returns None if the header is not found.
         """
-        return None
+        if request is None:
+            return None
+        auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return None
+        return auth_header
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
