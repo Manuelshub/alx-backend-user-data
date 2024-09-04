@@ -50,10 +50,11 @@ class BasicAuth(Auth):
              base64_authorization_header) is not str:
             return None
         try:
-            val = base64.b64decode(base64_authorization_header)
+            encode = base64_authorization_header.encode('utf-8')
+            val = base64.b64decode(encode)
+            return val.decode('utf-8')
         except binascii.Error:
             return None
-        return val.decode('utf-8')
 
     def extract_user_credentials(self,
                                  decoded_base64_authorization_header:
@@ -100,3 +101,24 @@ class BasicAuth(Auth):
             if user.is_valid_password(user_pwd):
                 return user
         return None
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Retrieves the User instance for the current request.
+
+        Args:
+            request (Request): The current request object.
+
+        Returns:
+            User: The User instance for the current request.
+        """
+        auth_header = self.authorization_header(request)
+        if auth_header:
+            token = self.extract_base64_authorization_header(auth_header)
+            if token:
+                dcd = self.decode_base64_authorization_header(token)
+                if dcd:
+                    u_name, u_pwd = self.extract_user_credentials(dcd)
+                    if u_name and u_pwd:
+                        return self.user_object_from_credentials(u_name, u_pwd)
+        return
