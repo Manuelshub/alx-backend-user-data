@@ -31,24 +31,21 @@ def not_found(error) -> str:
 
 @app.errorhandler(401)
 def unauthorized(error) -> str:
-    """ Unauthorized
+    """ Unauthorized handler
     """
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
-    """ Forbidden
+    """ Forbidden handler
     """
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
-def before_request():
-    """
-    Check if the request is authenticated or not.
-    If the request is authenticated, it will store the current user
-    in the flask.g object.
+def before_request() -> None:
+    """ Filter for request
     """
     auth_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                   '/api/v1/forbidden/']
