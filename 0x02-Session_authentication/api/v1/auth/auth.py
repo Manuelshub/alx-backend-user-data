@@ -2,6 +2,7 @@
 """ This module contains a class for API Authentication
 """
 from flask import request
+from os import getenv
 from typing import List, TypeVar
 
 
@@ -63,3 +64,14 @@ class Auth:
             User: The current user, or None if not found
         """
         return None
+
+    def session_cookie(self, request=None):
+        """
+        Retrieves the session cookie from the request.
+        If request is not provided, it uses the current request context.
+        Returns None if the header is not found.
+        """
+        if request is None:
+            return None
+        session_name = getenv('SESSION_NAME')
+        return request.cookies.get(session_name)
