@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+""" This module contains the endpoint for session login
 """
 from api.v1.views import app_views
 from flask import jsonify, request
