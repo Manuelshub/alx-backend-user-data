@@ -25,8 +25,7 @@ def reuser() -> str:
     password = request.form.get("password")
     try:
         Auth.register_user(email, password)
-        return jsonify({"email": email, "message": "user created"
-        }), 201
+        return jsonify({"email": f"{email}", "message": "user created"}), 201
     except Exception:
         return jsonify({"message": "email already registered"}), 400
 
