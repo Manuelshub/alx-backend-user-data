@@ -21,9 +21,8 @@ def default():
 def register_user():
     """ Registers a user
     """
-    if request:
-        email = request.form.get("email")
-        password = request.form.get("password")
+    email = request.form.get("email")
+    password = request.form.get("password")
     try:
         user = Auth.register_user(email, password)
         return jsonify({
