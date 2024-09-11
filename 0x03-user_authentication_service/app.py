@@ -5,9 +5,8 @@ This module contains a flask app
 from auth import Auth
 from flask import Flask, jsonify, request
 
-
-app = Flask(__name__)
 Auth = Auth()
+app = Flask(__name__)
 
 
 @app.route('/', methods=['GET'], strict_slashes=False)
@@ -25,7 +24,7 @@ def users() -> str:
     password = request.form.get("password")
     try:
         Auth.register_user(email, password)
-        return jsonify({"email": f"{email}", "message": "user created"}), 200
+        return jsonify({"email": f"{email}", "message": "user created"}), 201
     except Exception:
         return jsonify({"message": "email already registered"}), 400
 
