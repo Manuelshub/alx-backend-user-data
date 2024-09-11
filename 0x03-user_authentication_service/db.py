@@ -3,10 +3,14 @@
 """
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
 from user import Base, User
+
+Fields = ["id", "email", "hashed_password", "session_id", "reset_token"]
 
 
 class DB:
@@ -48,3 +52,23 @@ class DB:
         session.add(user)
         session.commit()
         return user
+
+    def find_user_by(self, **kwargs) -> User:
+        """
+        Find a user by some criteria.
+
+        Args:
+            **kwargs: Keyword arguments where the key is the column name
+                and the value is the value to search for.
+
+        Returns:
+            User: The matching user instance or None if no match is found
+        """
+        if not kwargs or any(x not in Fields for x in kwargs.keys()):
+            raise InvalidRequestError
+        session = self._session
+        try:
+            our_user = session.query(User).filter_by(**kwargs).one()
+            return our_user
+        except Exception:
+            raise NoResultFound
