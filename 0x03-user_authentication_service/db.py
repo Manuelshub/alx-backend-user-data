@@ -72,3 +72,25 @@ class DB:
             return our_user
         except Exception:
             raise NoResultFound
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """
+        Update a user in the DB
+
+        Args:
+            user_id (int): The id of the user to update
+            **kwargs: Keyword arguments where the key is the column name
+                and the value is the new value to set.
+
+        Returns:
+            None
+        """
+        if not kwargs or not user_id:
+            return None
+        session = self._session
+        user = self.find_user_by(id=user_id)
+        for key, val in kwargs.items():
+            if key not in Fields:
+                raise ValueError
+            setattr(user, key, val)
+        session.commit()
