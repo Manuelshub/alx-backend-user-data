@@ -64,7 +64,7 @@ class DB:
         Returns:
             User: The matching user instance or None if no match is found
         """
-        if not kwargs or any(x not in Fields for x in kwargs.keys()):
+        if not kwargs or any(x not in Fields for x in kwargs):
             raise InvalidRequestError
         session = self._session
         try:
