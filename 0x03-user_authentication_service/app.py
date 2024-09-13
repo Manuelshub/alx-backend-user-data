@@ -54,7 +54,8 @@ def logout() -> str:
         user = Auth.get_user_from_session_id(session_id)
     except NoResultFound:
         abort(403)
-    return jsonify({"email": user.email}), 200
+    Auth.destroy_session(user.id)
+    return redirect(url_for('/'))
 
 
 if __name__ == '__main__':
