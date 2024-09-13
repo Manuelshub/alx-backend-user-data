@@ -45,5 +45,17 @@ def login() -> str:
         return res
 
 
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """ Logs out a user
+    """
+    session_id = request.cookies.get("session_id")
+    try:
+        user_id = Auth.get_user_from_session_id(session_id)
+    except NoResultFound:
+        abort(403)
+    return jsonify({"email": user.email}), 200
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port="5000")
