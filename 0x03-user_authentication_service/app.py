@@ -51,7 +51,7 @@ def logout() -> str:
     """
     session_id = request.cookies.get("session_id")
     try:
-        user_id = Auth.get_user_from_session_id(session_id)
+        user = Auth.get_user_from_session_id(session_id)
     except NoResultFound:
         abort(403)
     return jsonify({"email": user.email}), 200
