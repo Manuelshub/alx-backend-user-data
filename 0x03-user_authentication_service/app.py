@@ -3,7 +3,7 @@
 This module contains a flask app
 """
 from auth import Auth
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 
 Auth = Auth()
 app = Flask(__name__)
