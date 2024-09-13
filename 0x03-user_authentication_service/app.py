@@ -36,13 +36,13 @@ def login() -> str:
     email = request.form.get("email")
     password = request.form.get("password")
     valid = Auth.valid_login(email, password)
-    if not valid:
-        abort(401)
-    else:
+    if valid:
         session_id = Auth.create_session(email)
         res = jsonify({"email": email, "message": "logged in"})
         res.set_cookie('session_id', session_id)
         return res
+    else:
+        abort(401)
 
 
 @app.route('/sessions', methods=['DELETE'], strict_slashes=False)
@@ -64,9 +64,9 @@ def profile() -> str:
     """
     session_id = request.cookies.get("session_id")
     user = Auth.get_user_from_session_id(session_id)
-    if not user:
-        abort(403)
-    return jsonify({"email": user.email}), 200
+    if user:
+        return jsonify({"email": user.email}), 200
+    abort(403)
 
 
 if __name__ == '__main__':
