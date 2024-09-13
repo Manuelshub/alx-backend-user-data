@@ -53,7 +53,7 @@ def logout() -> str:
     user = AUTH.get_user_from_session_id(session_id)
     if user:
         AUTH.destroy_session(user.id)
-        return redirect('/')
+        return redirect(url_for('/'))
     else:
         abort(403)
 
@@ -67,7 +67,8 @@ def profile() -> str:
     user = AUTH.get_user_from_session_id(session_id)
     if user:
         return jsonify({"email": user.email}), 200
-    abort(403)
+    else:
+        abort(403)
 
 
 @app.route('/reset_password', methods=['POST'], strict_slashes=False)
@@ -81,6 +82,19 @@ def get_reset_password_token() -> str:
     else:
         token = AUTH.get_reset_password_token(email)
         return jsonify({"email": email, "reset_token": token}), 200
+
+
+@app.route('reset_password', methods=['PUT'], strict_slashes=False)
+def update_password() -> str:
+    """ update user password
+    """
+    email = request.form.get("email")
+    token = request.form.get("reset_token")
+    new_pwd = request.form.get("new_password")
+    try:
+        AUTH.update_password(token, new_pwd)
+        return jsonify({"email": email,
+                        "message": "Password updated"}), 200
 
 
 if __name__ == '__main__':
