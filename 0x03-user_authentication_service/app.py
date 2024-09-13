@@ -5,7 +5,7 @@ This module contains a flask app
 from auth import Auth
 from flask import Flask, jsonify, request, abort, redirect
 
-Auth = Auth()
+AUTH = Auth()
 app = Flask(__name__)
 
 
@@ -23,7 +23,7 @@ def users() -> str:
     email = request.form.get("email")
     password = request.form.get("password")
     try:
-        Auth.register_user(email, password)
+        AUTH.register_user(email, password)
         return jsonify({"email": f"{email}", "message": "user created"}), 200
     except Exception:
         return jsonify({"message": "email already registered"}), 400
@@ -35,9 +35,9 @@ def login() -> str:
     """
     email = request.form.get("email")
     password = request.form.get("password")
-    valid = Auth.valid_login(email, password)
+    valid = AUTH.valid_login(email, password)
     if valid:
-        session_id = Auth.create_session(email)
+        session_id = AUTH.create_session(email)
         res = jsonify({"email": email, "message": "logged in"})
         res.set_cookie('session_id', session_id)
         return res
@@ -50,9 +50,9 @@ def logout() -> str:
     """ Logs out a user
     """
     session_id = request.cookies.get("session_id")
-    user = Auth.get_user_from_session_id(session_id)
+    user = AUTH.get_user_from_session_id(session_id)
     if user:
-        Auth.destroy_session(user.id)
+        AUTH.destroy_session(user.id)
         return redirect('/')
     abort(403)
 
@@ -63,7 +63,7 @@ def profile() -> str:
     Returns a JSON payload based on the user session.
     """
     session_id = request.cookies.get("session_id")
-    user = Auth.get_user_from_session_id(session_id)
+    user = AUTH.get_user_from_session_id(session_id)
     if user:
         return jsonify({"email": user.email}), 200
     abort(403)
@@ -74,11 +74,11 @@ def get_reset_password_token() -> str:
     """ Post /reset_password
     """
     email = request.form.get("email")
-    user = Auth.create_session(email)
+    user = AUTH.create_session(email)
     if not user:
         abort(403)
     else:
-        token = Auth.get_reset_password_token(email)
+        token = AUTH.get_reset_password_token(email)
         return jsonify({"email": email, "reset_token": token}), 200
 
 
